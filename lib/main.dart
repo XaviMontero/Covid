@@ -1,3 +1,4 @@
+import 'package:covid/src/pages/estadistica_Page.dart';
 import 'package:covid/src/provider/contry.provider.dart';
 import 'package:flutter/material.dart';
  
@@ -13,8 +14,18 @@ class MyApp extends StatelessWidget {
    ContryProvider contry = new ContryProvider(); 
     return MaterialApp(
       theme: AppTheme.lightTheme,
-      home: HomePage(contra: contry.buscarContry(),),
+      
       debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomePage(contra: contry.buscarContry()),
+        '/detalle': (context) => WebViewExample(),
+       
+      },
     );
   }
 }
+
+
+
+ 

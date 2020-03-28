@@ -1,26 +1,29 @@
+import 'package:commons/commons.dart';
 import 'package:covid/src/helper/quad_clipper.dart';
 import 'package:covid/src/model/contry/contry.dart';
 import 'package:covid/src/model/covid/infect.dart';
+import 'package:covid/src/pages/estadistica_Page.dart';
 import 'package:covid/src/pages/recomended_page.dart';
 import 'package:covid/src/provider/contry.provider.dart';
 import 'package:covid/src/provider/covid.provider.dart';
 import 'package:covid/src/theme/color/light_color.dart';
 import 'package:flutter/material.dart';
- 
+
 import 'Dart:math';
 
 class HomePage extends StatelessWidget {
- final  Future<List<Contry>> contra; 
-  HomePage({Key key,this.contra}) : super(key: key);
+  final Future<List<Contry>> contra;
+  HomePage({Key key, this.contra}) : super(key: key);
 
   double width;
   @override
   void initState() {
-        contra.then((valor){
-            contrys.addAll(valor);
-         }); 
+    contra.then((valor) {
+      contrys.addAll(valor);
+    });
     print(contrys.length);
   }
+
   Widget _header(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
     return ClipRRect(
@@ -124,58 +127,8 @@ class HomePage extends StatelessWidget {
             style: TextStyle(
                 color: LightColor.titleTextColor, fontWeight: FontWeight.bold),
           ),
-          _chip("See all", primary)
+          _chip("Ver Todos", primary)
         ],
-      ),
-    );
-  }
-
-  Widget _featuredRowA() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Container(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            _card(
-                primary: LightColor.orange,
-                backWidget:
-                    _decorationContainerA(LightColor.lightOrange, 50, -30),
-                chipColor: LightColor.orange,
-                chipText1: "Find the right degree for you",
-                chipText2: "8 Cources",
-                isPrimaryCard: true,
-                imgPath:
-                    "https://jshopping.in/images/detailed/591/ibboll-Fashion-Mens-Optical-Glasses-Frames-Classic-Square-Wrap-Frame-Luxury-Brand-Men-Clear-Eyeglasses-Frame.jpg"),
-            _card(
-                primary: Colors.white,
-                chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerB(Colors.white, 90, -40),
-                chipText1: "Become a data scientist",
-                chipText2: "8 Cources",
-                imgPath:
-                    "https://hips.hearstapps.com/esquireuk.cdnds.net/16/39/980x980/square-1475143834-david-gandy.jpg?resize=480:*"),
-            _card(
-                primary: Colors.white,
-                chipColor: LightColor.lightOrange,
-                backWidget: _decorationContainerC(Colors.white, 50, -30),
-                chipText1: "Become a digital marketer",
-                chipText2: "8 Cources",
-                imgPath:
-                    "https://www.visafranchise.com/wp-content/uploads/2019/05/patrick-findaro-visa-franchise-square.jpg"),
-            _card(
-                primary: Colors.white,
-                chipColor: LightColor.seeBlue,
-                backWidget: _decorationContainerD(LightColor.seeBlue, -50, 30,
-                    secondary: LightColor.lightseeBlue,
-                    secondaryAccent: LightColor.darkseeBlue),
-                chipText1: "Become a machine learner",
-                chipText2: "8 Cources",
-                imgPath:
-                    "https://d1mo3tzxttab3n.cloudfront.net/static/img/shop/560x580/vint0080.jpg"),
-          ],
-        ),
       ),
     );
   }
@@ -196,17 +149,21 @@ class HomePage extends StatelessWidget {
             child: ListView.builder(
                 itemCount: tickets.length,
                 itemBuilder: (contex, i) {
-                  return _card(
-                      primary: color[rng.nextInt(4) + 1],
-                      backWidget: mapa[rng.nextInt(4) + 1],
-                      chipColor: LightColor.orange,
-                      chipText1: 'Contagios: ${tickets[i].cases.toString()}',
-                      chipText2: tickets[i].country,
-                      isPrimaryCard: true,
-                      det: 'Muertos: ${tickets[i].deaths}',
-                      recuperado: 'Recuperados: ${tickets[i].recovered}',
-                      activos: 'Hoy: ${tickets[i].todayCases}',
-                      imgPath: bandera(tickets[i].country));
+                  return GestureDetector(
+                    child: _card(
+                        primary: color[rng.nextInt(4) + 1],
+                        backWidget: mapa[rng.nextInt(4) + 1],
+                        chipColor: LightColor.orange,
+                        chipText1: 'Contagios: ${tickets[i].cases.toString()}',
+                        chipText2: tickets[i].country,
+                        isPrimaryCard: true,
+                        det: 'Muertos: ${tickets[i].deaths}',
+                        recuperado: 'Recuperados: ${tickets[i].recovered}',
+                        activos: 'Hoy: ${tickets[i].todayCases}',
+                        imgPath: bandera(tickets[i].country)),
+                    onTap: (){_masInfo(tickets[i].country, contex); },
+                  
+                  );
                 }),
           );
         } else {
@@ -216,6 +173,30 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  _masInfo(String contry, BuildContext context){
+     if(contry.endsWith('Ecuador')){
+             Navigator.pushNamed(context, '/detalle', arguments:[ kNavigationEcuador,contry]);
+     }
+     else if(contry.endsWith('Brazil')){
+             Navigator.pushNamed(context, '/detalle', arguments:[ kNavigationBrasil,contry]);
+     } else if(contry.endsWith('Colombia')){
+             Navigator.pushNamed(context, '/detalle', arguments:[ kNavigationColombia,contry]);
+     }else if(contry.endsWith('Peru')){
+             Navigator.pushNamed(context, '/detalle', arguments:[ kNavigationPeru,contry]);
+     }else if(contry.endsWith('USA')){
+             Navigator.pushNamed(context, '/detalle', arguments:[ kNavigationUSA,contry]);
+     }else {
+      return infoDialog(  
+    context,  
+    "Aun segimos trabajando por tu pais, si quieres unirte ala comunidad ",  
+  
+    positiveText: ":(",  
+    positiveAction: () {},  
+);  
+     }
+
+
+  }
   Widget _card(
       {Color primary = Colors.redAccent,
       String imgPath,
@@ -351,7 +332,7 @@ class HomePage extends StatelessWidget {
             ],
           ),
           SizedBox(height: 5),
-          _chip( '${courses} ', primary, height: 5, isPrimaryCard: isPrimaryCard)
+          _chip('${courses} ', primary, height: 5, isPrimaryCard: isPrimaryCard)
         ],
       ),
     );
@@ -507,32 +488,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  static Widget _decorationContainerF(
-      Color primary, Color secondary, double top, double left) {
-    return Stack(
-      children: <Widget>[
-        Positioned(
-            top: 25,
-            right: -20,
-            child: RotatedBox(
-              quarterTurns: 1,
-              child: ClipRect(
-                  clipper: QuadClipper(),
-                  child: CircleAvatar(
-                      backgroundColor: primary.withAlpha(100), radius: 50)),
-            )),
-        Positioned(
-            top: 34,
-            right: -8,
-            child: ClipRect(
-                clipper: QuadClipper(),
-                child: CircleAvatar(
-                    backgroundColor: secondary.withAlpha(100), radius: 40))),
-        _smallContainer(LightColor.yellow, 15, 90, radius: 5)
-      ],
-    );
-  }
-
   static Positioned _smallContainer(Color primary, double top, double left,
       {double radius = 10}) {
     return Positioned(
@@ -550,10 +505,10 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-         contra.then((v){
-           contrys.addAll(v);
-         });
-    
+    contra.then((v) {
+      contrys.addAll(v);
+    });
+
     width = MediaQuery.of(context).size.width;
     return Scaffold(
         bottomNavigationBar: BottomNavigationBar(
@@ -580,7 +535,8 @@ class HomePage extends StatelessWidget {
             children: <Widget>[
               _header(context),
               SizedBox(height: 10),
-              _categoryRow("Featured", LightColor.orange, LightColor.orange),
+              _categoryRow(
+                  "Listado de paises", LightColor.orange, LightColor.orange),
               _ticket(context),
             ],
           ),
@@ -606,39 +562,100 @@ class HomePage extends StatelessWidget {
   };
 
   var rng = new Random();
-    List<Contry> contrys = new List() ;
+  List<Contry> contrys = new List();
 
   static ContryProvider contryProvider = new ContryProvider();
-   
- 
-  
 
-   String poblacion(String getname){
-    if (contrys!= null){
-       
-        for(Contry recupera in contrys){
-            if (recupera.name.endsWith(getname)){
-                  return recupera.population.toString(); 
-            }
+  String poblacion(String getname) {
+    if (contrys != null) {
+      for (Contry recupera in contrys) {
+        if (recupera.name.endsWith(getname)) {
+          return recupera.population.toString();
         }
-      return null; 
-      }else{
-        return 'Pais Err';
       }
- }
-  String bandera(String getname){
-    if (contrys!= null){
-       
-        for(Contry recupera in contrys){
-            if (recupera.name.endsWith(getname)){
-              print('https://www.countryflags.io/${recupera.alpha2Code}/shiny/64.png');
-                  return 'https://www.countryflags.io/${recupera.alpha2Code}/shiny/64.png'; 
-            }
-        }
-      return 'https://img.icons8.com/dotty/70/000000/nothing-found.png'; 
-      }else{
-        return 'https://img.icons8.com/dotty/70/000000/nothing-found.png';
-      }
- }
+      return null;
+    } else {
+      return 'Pais Err';
+    }
+  }
 
+  String bandera(String getname) {
+    if (contrys != null) {
+      if (getname.endsWith('USA')){
+        return 'https://www.countryflags.io/US/shiny/64.png';
+      }
+      for (Contry recupera in contrys) {
+        if (recupera.name.endsWith(getname)) {
+          print(
+              'https://www.countryflags.io/${recupera.alpha2Code}/shiny/64.png');
+          return 'https://www.countryflags.io/${recupera.alpha2Code}/shiny/64.png';
+        }
+      }
+      return 'https://img.icons8.com/dotty/70/000000/nothing-found.png';
+    } else {
+      return 'https://img.icons8.com/dotty/70/000000/nothing-found.png';
+    }
+  }
 }
+const String kNavigationEcuador = '''
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desde la web</title>
+</head>
+<body>
+<div class='tableauPlaceholder' id='viz1585426281241' style='position: relative'><noscript><a href='https:&#47;&#47;public.tableau.com&#47;profile&#47;paulmenam#!&#47;vizhome&#47;CoronavirusenEcuador&#47;Hoja2?publish=yes'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Co&#47;CoronavirusenEcuador&#47;Dashboard3&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='CoronavirusenEcuador&#47;Dashboard3' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Co&#47;CoronavirusenEcuador&#47;Dashboard3&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1585426281241');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='100%';vizElement.style.height='1077px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='100%';vizElement.style.height='1027px';} else { vizElement.style.width='100%';vizElement.style.height='777px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+</body>
+</html>
+''';
+const String kNavigationBrasil = '''
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desde la web</title>
+</head>
+<body>
+<div class='tableauPlaceholder' id='viz1585432129979' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Re&#47;ReligEstados&#47;ReligionoBrasil&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='ReligEstados&#47;ReligionoBrasil' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Re&#47;ReligEstados&#47;ReligionoBrasil&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1585432129979');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='1024px';vizElement.style.height='795px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1024px';vizElement.style.height='795px';} else { vizElement.style.width='100%';vizElement.style.height='1427px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+ </body>
+</html>
+''';
+const String kNavigationColombia = '''
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desde la web</title>
+</head>
+<body>
+<div class='tableauPlaceholder' id='viz1585432482653' style='position: relative'><noscript><a href='https:&#47;&#47;www.eltiempo.com&#47;datos&#47;casos-actualizados-de-coronavirus-en-colombia-471650'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Ev&#47;EvolucindaadaCOVID-19Colombia&#47;Mapaycasos&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='path' value='views&#47;EvolucindaadaCOVID-19Colombia&#47;Mapaycasos?:embed=y&amp;:toolbar=yes&amp;:embed_code_version=3&amp;:loadOrderID=0&amp;:display_count=yes&amp;:tabs=no' /> <param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Ev&#47;EvolucindaadaCOVID-19Colombia&#47;Mapaycasos&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='tabs' value='no' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1585432482653');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*0.75)+'px';} else { vizElement.style.width='100%';vizElement.style.height=(divElement.offsetWidth*1.77)+'px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+ </body>
+</html>
+''';
+
+const String kNavigationPeru= '''
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desde la web</title>
+</head>
+<body>
+<div class='tableauPlaceholder' id='viz1585433120636' style='position: relative'><noscript><a href='#'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Co&#47;Covid19_15850860034290&#47;Covid19&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='Covid19_15850860034290&#47;Covid19' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Co&#47;Covid19_15850860034290&#47;Covid19&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1585433120636');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='1200px';vizElement.style.height='1627px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1200px';vizElement.style.height='1627px';} else { vizElement.style.width='100%';vizElement.style.height='1177px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script> </body>
+
+</html>
+''';
+const String kNavigationUSA= '''
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desde la web</title>
+</head>
+<body>
+<div class='tableauPlaceholder' id='viz1585434948968' style='position: relative'><noscript><a href='https:&#47;&#47;twitter.com&#47;COVID19Tracking'><img alt=' ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;CO&#47;COVID19inUSA&#47;COVID-19spreadinUSA&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='COVID19inUSA&#47;COVID-19spreadinUSA' /><param name='tabs' value='yes' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;CO&#47;COVID19inUSA&#47;COVID-19spreadinUSA&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='origin' value='viz_share_link' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1585434948968');                    var vizElement = divElement.getElementsByTagName('object')[0];                    if ( divElement.offsetWidth > 800 ) { vizElement.style.width='1000px';vizElement.style.height='850px';} else if ( divElement.offsetWidth > 500 ) { vizElement.style.width='1000px';vizElement.style.height='850px';} else { vizElement.style.width='100%';vizElement.style.height='1560px';}                     var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+</body>
+</html>
+''';
+

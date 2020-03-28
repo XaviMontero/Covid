@@ -1,13 +1,10 @@
 # covid
-
-Nuevo proyecto para  BettaTech
-
 ## Como empezamos 
 
-Este proyecto consume una API levantada en HEROKU  y otra de paises uniendo las dos obtenemos este resultado.
+Este proyecto consume una API levantada en Heroku.
  
-`Covid` proporciona un buen uso de la informacion, evitando noticas falsas, el servidor esta echa en heroku.
+`Covid` proporciona un buen uso de la informacion, evitando noticas falsas.
 ![Previa](https://raw.githubusercontent.com/XaviMontero/coivd/master/img/dama.png)
 ![Vertical](https://raw.githubusercontent.com/XaviMontero/coivd/master/img/sata.png)
 
-M
+ 
