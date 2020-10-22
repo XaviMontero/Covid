@@ -14,3 +14,5 @@ Este proyecto consume una API levantada en Heroku.
 
 ![Vertical](https://raw.githubusercontent.com/XaviMontero/coivd/master/img/ecu.png)
 ![Vertical](https://raw.githubusercontent.com/XaviMontero/coivd/master/img/super.png)
+
+Xavi Montero 
