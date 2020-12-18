@@ -23,6 +23,9 @@ jobs:
       - name: Print Dart SDK version
         run: dart --version
 
+      - name: Clean dependencies
+        run: flutter clean
+        
       - name: Install dependencies
         run: dart pub get
 
