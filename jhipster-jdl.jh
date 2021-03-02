@@ -1077,22 +1077,22 @@ enum TipoInformacion {
 	NOMBRES, HASH, FECHA, TIEMPO
 }
 
-entity DocumentoOfacOnu {
+entity DocumentoCoordenadasPagina {
     tipo TipoDocumento required,
-    numeroPagina Integer,
-    tipoInformacion TipoInformacion,
-    posX Integer,
-    posY Integer,
-    fontSize BigDecimal,
-    font String,
-    valorRotateDegrees Integer
+    numeroPagina Integer required,
+    tipoInformacion TipoInformacion required,
+    posX Integer required,
+    posY Integer required,
+    fontSize BigDecimal required,
+    font String required,
+    valorRotateDegrees Integer required
 }
 
 paginate ReembolsoCredito, CreditoTransaccion, DeudaLista, BienPropiedad, BienVehiculo, ReferenciaComercial, Conyuge, Empresa, ClienteDatosPersonales, BlackListCredito,
 Oficina, Empleado, Cliente, SolicitudCredito, Credito, Referencia, Direccion, DatosDomicilio, DatosLaboral, ClienteSupermercado, DatosConsulta with pagination
 paginate Telefono, Documento, Novedad, IngresoLista, GastoLista, LineaCredito, ResultadoCalificacion, ProductoCredito, ResultadoProducto, LineaProducto, CondicionCredito, VerificacionObligatoria, DocumentosObligatorios with pagination
 paginate PayjoyDevice, LineaCreditoSimulador with pagination
-paginate EmpresaImagen, Comercio, Tienda, ProductoFinanciero, ListaEmpresa, ClienteRegistrado, DocumentoOfacOnu with pagination
+paginate EmpresaImagen, Comercio, Tienda, ProductoFinanciero, ListaEmpresa, ClienteRegistrado, DocumentoOfacOnu, DocumentoCoordenadasPagina with pagination
 paginate CategoriaCliente with infinite-scroll
 dto * with mapstruct
 
@@ -1101,4 +1101,4 @@ service ReembolsoCredito, CreditoTransaccion, LoanTransaction, DeudaLista, BienP
 ClienteDatosPersonales, CategoriaCliente, SolicitudCredito, Credito, Referencia, Direccion, DatosDomicilio, DatosLaboral, DatosConsulta, BlackListCredito,
 Novedad, IngresoLista, GastoLista, ClienteSupermercado, ResultadoCalificacion, ProductoCredito, ResultadoProducto, Telefono, LineaCredito, LineaProducto, CondicionCredito, VerificacionObligatoria, DocumentosObligatorios with serviceImpl
 service PayjoyDevice, CargoCuota, LineaCreditoSimulador with serviceImpl
-service EmpresaImagen, Comercio, Tienda, ProductoFinanciero, ListaEmpresa, ClienteRegistrado, DocumentoOfacOnu with serviceImpl
+service EmpresaImagen, Comercio, Tienda, ProductoFinanciero, ListaEmpresa, ClienteRegistrado, DocumentoOfacOnu, DocumentoCoordenadasPagina with serviceImpl
