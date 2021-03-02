@@ -1,0 +1,1104 @@
+
+
+entity Empleado{
+	codigo String required maxlength(40),
+}
+
+entity Oficina{
+	codigo String required maxlength(40),
+    nombre String required maxlength(100),
+    nombreComercio String maxlength(100),
+    ciudad String required maxlength(50),
+    codigoAgenciaBP String maxlength(4)
+}
+
+entity Empresa{
+     nombre String required maxlength(100),
+     nombreComercial String required maxlength(100),
+     ruc String maxlength(13),
+     codigoRegulador String maxlength(7)
+}
+
+relationship OneToMany {
+	Empresa{oficina} to Oficina{empresa}
+}
+
+relationship OneToMany {
+	Empleado{solicitudCredito} to SolicitudCredito{asesor}
+}
+
+relationship OneToMany {
+	Oficina{empleado} to Empleado{oficina}
+}
+
+
+entity SolicitudCredito {
+	 monto BigDecimal,
+     montoMaxPosible BigDecimal,
+     fechaIngreso LocalDate,
+     fechaHoraIngreso Instant required,
+     estadoCodigo EstadosSolicitudCredito required,
+     estadoVerificacion EstadosVerificacion required,
+     estadoVerTelefonica EstadosVerificacion required,
+     estadoVerFisica EstadosVerificacion required,
+     estadoVerDocumental EstadosVerificacion required,
+     docFirmaImprimidos Boolean required,
+     docFirmaSubidos Boolean required,
+     docAdicionalesSubidos Boolean required,
+     ingresandoFecha Instant,
+     creadoFecha Instant,
+     aprobadoFecha Instant,
+     rechazadoFecha Instant,
+     anuladoFecha Instant,
+     cerradoFecha Instant
+}
+
+
+
+enum TipoDocumento {
+	SOLICITUD_CREDITO, CEDULA,
+    FOTO, PAGARE, PAPELETA_VOTACION,
+    ACREDITACION_INGRESOS, AUTORIZACION_ACCESO_DATOS,
+    CROQUIS, TABLA_GASTOS_COBRANZA, CEDULA_2
+}
+
+entity Documento {
+	nombre String required maxlength(200),
+    file Blob required,
+    estadoVerificacion EstadosVerificacion,
+    fechaCreado Instant,
+    fechaActualizado Instant,
+    fechaAprobado Instant
+}
+
+entity DocumentoFile {
+    file Blob required
+}
+
+entity DocumentoTipo {
+	tipo TipoDocumento
+}
+
+relationship OneToOne {
+	Documento{documentoFile} to DocumentoFile{documento}
+}
+
+relationship OneToMany {
+	Documento{documentoTipo} to DocumentoTipo{documento}
+}
+
+relationship OneToMany {
+	SolicitudCredito{documento} to Documento{solicitudCredito}
+}
+
+relationship OneToMany {
+	Credito{documento} to Documento{credito}
+}
+
+relationship OneToMany {
+	Direccion{documento} to Documento{direccion}
+}
+
+enum TipoNovedad {
+	SOLICITUD_CREDITO, CREDITO, DOCUMENTO, REFERENCIA,
+    TELEFONO, DATOS_DOMICILIO, DATOS_LABORAL
+}
+
+entity Novedad {
+	tipo TipoNovedad,
+    relacionEntidadId Long,
+    relacionEstado String maxlength(50),
+    fechaIngreso Instant required,
+    userId Long required,
+    texto String maxlength(200)
+}
+
+relationship OneToMany {
+	SolicitudCredito{novedad} to Novedad{solicitudCredito}
+}
+
+entity Conyuge {
+    cedula String required minlength(8) maxlength(30),
+	nombre1 String required maxlength(100),
+    nombre2 String maxlength(100),
+    apellido1 String required maxlength(100),
+    apellido2 String maxlength(100)
+}
+
+relationship OneToOne {
+	Conyuge{solicitudCredito} to SolicitudCredito{conyuge}
+}
+
+relationship OneToMany {
+	Cliente{conyuge} to Conyuge{cliente}
+}
+
+entity Cliente {
+	coreClientId Long,
+    cedula String required minlength(8) maxlength(30),
+	nombres String required maxlength(50),
+    nombre2 String maxlength(50),
+    apellidos String required maxlength(50),
+    apellido2 String maxlength(50),
+    mail String maxlength(100),
+    profesion String maxlength(100),
+    fechaNacimiento LocalDate,
+    paisNacimientoCodigo String maxlength(5),
+    provinciaNacimientoCodigo String maxlength(5),
+    ciudadNacimientoCodigo String maxlength(5),
+    sexoPersonaCodigo String maxlength(5),
+    actividadEcoCodigo String maxlength(5),
+    situacionLabCodigo String maxlength(5),
+    numeroHijos Integer,
+    estadoCivilCodigo String maxlength(5),
+    nivelEducativoCodigo String maxlength(5),
+    nacionalidadCodigo String maxlength(5)
+}
+
+// defining multiple OneToMany relationships with comments
+relationship OneToMany {
+	Cliente{solicitudCredito} to SolicitudCredito{cliente}
+}
+
+entity ClienteDatosPersonales {
+    actual Boolean,
+	nombres String required maxlength(50),
+    nombre2 String maxlength(50),
+    apellidos String required maxlength(50),
+    apellido2 String maxlength(50),
+    mail String maxlength(100),
+    profesion String maxlength(100),
+    sexoPersonaCodigo String maxlength(5),
+    actividadEcoCodigo String maxlength(5),
+    situacionLabCodigo String maxlength(5),
+    numeroHijos Integer,
+    estadoCivilCodigo String maxlength(5),
+    nivelEducativoCodigo String maxlength(5),
+    nacionalidadCodigo String maxlength(5)
+}
+
+// defining multiple OneToMany relationships with comments
+relationship OneToMany {
+	Cliente{clienteDatosPersonales} to ClienteDatosPersonales{cliente}
+}
+
+relationship OneToOne {
+	ClienteDatosPersonales{solicitudCredito} to SolicitudCredito{clienteDatosPersonales}
+}
+
+entity ConsultaDatosCliente {
+    cedula String required minlength(8) maxlength(30),
+	nombres String required maxlength(100),
+    nombre2 String maxlength(100),
+    apellidos String required maxlength(100),
+    apellido2 String maxlength(100)
+}
+
+relationship OneToMany {
+	Cliente{consultaDatosCliente} to ConsultaDatosCliente{cliente}
+}
+
+relationship OneToMany {
+	Oficina{consultaDatosCliente} to ConsultaDatosCliente{oficina}
+}
+
+relationship OneToOne {
+	ConsultaDatosCliente{resultadoCalificacion} to ResultadoCalificacion{consulta}
+}
+
+relationship OneToOne {
+	ConsultaDatosCliente{documento} to Documento{consulta}
+}
+
+enum TipoReferencia {
+	FAMILIAR, AMISTAD
+}
+
+entity Referencia {
+	parentesco String maxlength(100),
+    tipo TipoReferencia,
+    nombresApellidos String maxlength(200) required,
+    provinciaDomicilioCodigo String maxlength(5),
+    ciudadDomicilioCodigo String maxlength(5),
+    observaciones String maxlength(200),
+    estadoVerificacion EstadosVerificacion  required
+}
+
+entity BlackListCredito {
+    cedula String required maxlength(30),
+    fechaIngreso Instant required,
+    motivo String maxlength(250)
+}
+
+enum TipoListaCorreo {
+    SOLICITUD_APROBADA, SOLICITUD_INGRESADA, INICIAR_VERIFICACION_TELEFONICA
+}
+
+entity ListaCorreo {
+    mail String minlength(5) maxlength(100) required,
+    tipoLista TipoListaCorreo required,
+    activo Boolean required
+}
+
+relationship OneToMany {
+	SolicitudCredito{referencia} to Referencia{solicitudCredito}
+}
+
+relationship OneToMany {
+	Cliente{referencia} to Referencia{cliente}
+}
+
+enum TipoTelefono {
+	CELULAR, CONVENCIONAL
+}
+
+enum TipoUsoTelefono {
+	PERSONAL, LABORAL
+}
+
+entity Telefono {
+	numeroTelefono String maxlength(20) required,
+    tipo TipoTelefono,
+    uso TipoUsoTelefono,
+    observaciones String maxlength(200),
+    estadoVerificacion EstadosVerificacion required
+
+}
+
+relationship OneToMany {
+	Cliente{telefono} to Telefono
+}
+
+relationship OneToMany {
+	SolicitudCredito{telefono} to Telefono
+}
+
+relationship OneToOne {
+	Referencia{telefono} to Telefono
+}
+
+entity DatosConsulta{
+	cedula String required minlength(8) maxlength(30),
+    fechaCreacion Instant required,
+    fechaNacimiento LocalDate,
+    actividadEcoCodigo String maxlength(5),
+    inicioActividadEco LocalDate,
+    ingresosMensual BigDecimal,
+    gastosMensual BigDecimal,
+    deudasMensual BigDecimal,
+    tipoViviendaCodigo String maxlength(5),
+    provinciaCodigo String maxlength(5),
+    ciudadCodigo String maxlength(5),
+    aceptada Boolean,
+    tipoRechazo TipoRechazoDatosConsulta
+}
+
+enum TipoRechazoDatosConsulta {
+	CEDULA_INCORRECTA, CEDULA_FALLECIDO, EDAD_MINIMA, LIVENESS, FACE_VERIFICATION, LISTA_NEGRA, CODIGO_DACTILAR
+}
+
+relationship OneToMany {
+	Oficina{datosConsulta} to DatosConsulta{oficina}
+}
+
+relationship OneToMany {
+	Documento{datosConsulta} to DatosConsulta{documentoAutorizacion}
+    Documento{datosConsultaCedulaFrente} to DatosConsulta{documentoCedulaFrente}
+    Documento{datosConsultaCedulaTrasera} to DatosConsulta{documentoCedulaTrasera}
+}
+
+entity ClienteSupermercado{
+	cedula String required minlength(8) maxlength(30),
+    fechaIngreso LocalDate required,
+	nombres String maxlength(100),
+    apellidos String maxlength(100),
+    mail String maxlength(100),
+    fechaNacimiento LocalDate,
+    actividadEcoCodigo String maxlength(5),
+    profesion String maxlength(100),
+    estadoCivilCodigo String maxlength(5),
+    sexoPersonaCodigo String maxlength(5),
+    nacionalidadCodigo String maxlength(5),
+    ciudadCodigo String maxlength(5),
+    antiguedadLaboralCodigo String maxlength(5),
+    formaTrabajo String,
+    canton String maxlength(100),
+    parroquia String maxlength(100),
+    barrio String maxlength(100),
+    nivelEducativoCodigo String maxlength(5),
+    numeroHijosCodigo String maxlength(5),
+    provinciaCodigo String maxlength(5),
+    tipoViviendaCodigo String maxlength(5),
+    tiempoResidenciaCodigo String maxlength(5),
+    telefonoCelular String maxlength(20),
+    telefonoTrabajo String maxlength(20),
+    telefonoCasa String maxlength(20)
+}
+
+entity DatosLivenessTest{
+	cedula String required minlength(8) maxlength(30),
+    appId String required maxlength(64),
+    matiId String maxlength(64),
+    alive Boolean,
+    fechaCreacion Instant required,
+    dateCreatedMati Instant,
+    dateUpdatedMati Instant,
+	foto Blob
+}
+
+relationship OneToMany {
+	Cliente{datosLivenessTest} to DatosLivenessTest{cliente}
+}
+
+entity CategoriaCliente{
+	nombreCategoria String required minlength(1) maxlength(12),
+    orden Integer required,
+    fechaActualizado LocalDate required,
+    activo Boolean required,
+    general Boolean
+}
+
+relationship OneToMany {
+	CategoriaCliente{solicitudCredito} to SolicitudCredito{categoriaCliente}
+}
+
+enum TipoResultadoProducto {
+    CUOTA_MAX, CATEGORIA
+}
+
+entity ProductoCredito {
+    nombre String required maxlength(50),
+    codigo String maxlength(5),
+    gastos BigDecimal,
+    comisiones BigDecimal,
+    itbms BigDecimal,
+    seguroDesgravamen Boolean
+}
+
+relationship OneToMany {
+    Empresa{productoCredito} to ProductoCredito{empresa}
+}
+
+entity LineaProducto{
+	nombre String required maxlength(50),
+    codigo String maxlength(5)
+}
+
+entity LineaCreditoSimulador {
+    tasaInteres BigDecimal required
+}
+
+relationship OneToMany {
+    LineaProducto{lineaCreditoSimulador} to LineaCreditoSimulador{lineaProducto}
+    ProductoCredito{lineaCreditoSimulador} to LineaCreditoSimulador{productoCredito}
+}
+
+entity LineaCredito{
+	tasaInteres BigDecimal required,
+    cuotaMax BigDecimal,
+    montoMax BigDecimal required,
+    plazoMax Integer required,
+    entradaMin Integer required,
+    coreProductId Long
+}
+
+entity CondicionCredito{
+	tasaInteres BigDecimal required,
+    montoMax BigDecimal required,
+    cuotaMax BigDecimal required,
+    cuotaMin BigDecimal,
+    plazoMax Integer required,
+    entradaMin Integer required,
+    coreProductId Long
+}
+
+entity ResultadoProducto {
+    masterId Long,
+    tipoResultado TipoResultadoProducto,
+    estado EstadosResultado,
+    puntaje BigDecimal required,
+    puntajeSocial BigDecimal,
+    ingresosCalc BigDecimal,
+    deudasCalc BigDecimal,
+    gastosCalc BigDecimal,
+    cuotaMaxCalc BigDecimal,
+    aplica Boolean required,
+    analisis Boolean required
+}
+
+enum TipoCalificacion {
+	INFORMATIVO, VALIDO
+}
+
+enum ModoCalificacion {
+	MANUAL, AUTOMATICO
+}
+
+entity ResultadoCalificacion {
+    masterId Long,
+	fechaEjecucion LocalDate required,
+    estado EstadosResultadoCalificacion required,
+    cedula String required minlength(8) maxlength(30),
+    tipoCalificacion TipoCalificacion,
+    modoCalificacion ModoCalificacion,
+    puntaje BigDecimal required,
+    puntajeSocial BigDecimal,
+    ingresosCalc BigDecimal,
+    deudasCalc BigDecimal,
+    gastosCalc BigDecimal,
+    cuotaMaxCalc BigDecimal,
+    analisis Boolean,
+    nombre String,
+    fechaNacimiento LocalDate
+}
+
+relationship OneToMany {
+    ResultadoCalificacion{resultadoProducto} to ResultadoProducto{resultadoCalificacion}
+}
+
+relationship OneToMany {
+    CategoriaCliente{resultadoProducto} to ResultadoProducto{categoriaCliente}
+}
+
+relationship OneToMany {
+    ProductoCredito{resultadoProducto} to ResultadoProducto{productoCredito}
+}
+
+relationship OneToMany {
+    ResultadoProducto{condicionCredito} to CondicionCredito
+}
+
+relationship OneToMany {
+    DatosConsulta{resultadoCalificacion} to ResultadoCalificacion{datosConsulta}
+}
+
+relationship OneToMany {
+	ClienteSupermercado{resultadoCalificacion} to ResultadoCalificacion{clienteSupermercado}
+}
+
+relationship OneToOne {
+	ResultadoCalificacion{solicitudCredito} to SolicitudCredito{resultadoCalificacion}
+}
+
+relationship OneToMany {
+	CategoriaCliente{resultadoCalificacion} to ResultadoCalificacion{categoriaCliente}
+}
+
+relationship OneToMany {
+    ProductoCredito{condicionCredito} to CondicionCredito
+}
+
+
+entity VerificacionObligatoria {
+    contactosFijos Integer required,
+    contactosMovil Integer required,
+    referenciasFamiliarFijos Integer required,
+    referenciasFamiliarMovil Integer required,
+    referenciasAmistadFijos Integer required,
+    referenciasAmistadMovil Integer required,
+    direccionesDomiciliarias Integer required,
+    direccionesLaborales Integer required
+}
+
+entity DocumentosObligatorios {
+    tipo TipoDocumento required
+}
+
+relationship OneToOne {
+	CategoriaCliente{verificacionObligatoria} to VerificacionObligatoria
+}
+
+relationship OneToMany {
+	VerificacionObligatoria{documentosObligatorios} to DocumentosObligatorios
+}
+
+relationship OneToMany {
+	LineaProducto{lineaCredito} to LineaCredito
+}
+
+relationship OneToMany {
+	CategoriaCliente{lineaCredito} to LineaCredito
+}
+
+relationship OneToMany {
+	LineaProducto{condicionCredito} to CondicionCredito
+}
+
+relationship OneToMany {
+	SolicitudCredito{condicionCredito} to CondicionCredito
+}
+
+relationship OneToMany {
+	ResultadoCalificacion{condicionCredito} to CondicionCredito
+}
+
+enum EstadosSolicitudCredito {
+	INGRESANDO, EN_VERIFICACION, PRE_VERIFICADO, VERIFICADO, APROBADO, ANULADO, CERRADO, RECHAZADO
+}
+
+enum EstadosCredito {
+	INGRESANDO, PENDIENTE, APROBADO, DESEMBOLSADO, CERRADO, RECHAZADO, ANULADO, CASTIGADO, SOBREPAGADO
+}
+
+enum EstadosResultadoCalificacion {
+	PENDIENTE, APROBADO, CERRADO, RECHAZADO
+}
+
+enum EstadosResultado {
+	PENDIENTE, APROBADO, CERRADO, RECHAZADO
+}
+
+enum EstadosVerificacion {
+	PENDIENTE, APROBADO, RECHAZADO
+}
+
+enum FormaTrabajo {
+    DEPENDIENTE, INDEPENDIENTE
+}
+
+enum TipoLocal {
+	PROPIO, ARRENDADO, PROPIO_HIPOTECADO, AMBULANTE
+}
+
+entity DatosLaboral {
+	formaTrabajo FormaTrabajo,
+	nombreEmpresa String maxlength(50) required,
+    ruc String maxlength(15),
+    actividadEmpresa String maxlength(50),
+    telefonoEmpresa String maxlength(20),
+    telefonoEmpresa2 String maxlength(20),
+    cantidadEmpleado Integer,
+    fechaInicio LocalDate,
+    fechaInicioActividad LocalDate,
+    antiguedadLaboralCodigo String maxlength(5),
+    cargoLaboral String maxlength(50),
+    estadoVerificacion EstadosVerificacion required,
+    tipoLocal TipoLocal,
+    rise Boolean,
+    obligacionContabilidad Boolean
+}
+
+entity ReferenciaComercial {
+	nombreEmpresa String maxlength(50),
+    actividadEmpresa String maxlength(50),
+    telefonoEmpresa String maxlength(20),
+    telefonoEmpresa2 String maxlength(20),
+    email String maxlength(100)
+}
+
+relationship OneToMany {
+	SolicitudCredito{referenciaComercial} to ReferenciaComercial{solicitudCredito}
+}
+
+relationship OneToMany {
+	Cliente{referenciaComercial} to ReferenciaComercial{cliente}
+}
+
+entity DatosDomicilio {
+	tipoViviendaCodigo String maxlength(5),
+    tiempoResidenciaCodigo String maxlength(5),
+    estadoVerificacion EstadosVerificacion required,
+    nombreArrendador String maxlength(100),
+    telefonoArrendador String maxlength(20),
+    suministroLuz String maxlength(20)
+}
+
+entity Direccion {
+	direccion String maxlength(200) required,
+    numero String maxlength(10),
+    calleTransversal String maxlength(50),
+    referencia String maxlength(200),
+	ciudadCodigo String maxlength(5) required,
+	provinciaCodigo String maxlength(5) required,
+    parroquiaCodigo String maxlength(6),
+    parroquia String maxlength(100),
+	barrio String maxlength(100),
+    canton String maxlength(100),
+    codigoPostal String maxlength(15),
+    latitud BigDecimal,
+    longitud BigDecimal
+}
+
+relationship OneToMany {
+	Cliente{datosDomicilio} to DatosDomicilio
+}
+
+relationship OneToMany {
+	SolicitudCredito{datosDomicilio} to DatosDomicilio
+}
+
+relationship OneToOne {
+	DatosDomicilio{direccion} to Direccion
+}
+
+relationship OneToMany {
+	Cliente{datosLaboral} to DatosLaboral
+}
+
+relationship OneToMany {
+	SolicitudCredito{datosLaboral} to DatosLaboral
+}
+
+relationship OneToOne {
+	DatosLaboral{direccion} to Direccion
+}
+
+entity ListaEmpresa {
+    codigo String required maxlength(250),
+	nombreComercial String maxlength(200),
+    razonSocial String required maxlength(200),
+    patrono String required maxlength(200),
+    activo Boolean required,
+    tipoEmpresa TipoEmpresa required,
+    telefono String maxlength(20)
+}
+
+enum TipoEmpresa {
+    EMPRESA_PRIVADA, GOBIERNO, JUBILADOS_CSS
+}
+
+relationship OneToMany {
+	ListaEmpresa{datosLaboral} to DatosLaboral
+}
+
+enum TipoFrecuenciaPago {
+    DIAS, SEMANAS, MESES, ANOS
+}
+
+enum TipoOperacion {
+	ORIGINAL, REFINANCIAMIENTO, RETANQUEO, REESTRUCTURACION, ARREGLO_DE_PAGO
+}
+
+enum TipoCancelacion {
+	NORMAL, REFINANCIAMIENTO, RETANQUEO, REESTRUCTURACION, VENTA
+}
+
+entity Credito {
+	 coreLoanId Long,
+     estado EstadosCredito required,
+     numeroCredito String maxlength(25),
+     numeroCreditoMig String maxlength(25),
+     formaPago String maxlength(50),
+     tipoEmpresa String maxlength(50),
+	 montoCredito BigDecimal required,
+     montoFactura BigDecimal required,
+     montoEntrada BigDecimal required,
+     montoTotalCredito BigDecimal,
+     montoPrimerCuota BigDecimal,
+     montoTotalIntereses BigDecimal,
+     montoTotalGastos BigDecimal,
+     montoTotalComisiones BigDecimal,
+     montoTotalImpuestos BigDecimal,
+     montoSeguroDesgravamen BigDecimal,
+     impuestoSobreSeguroDesgravamen BigDecimal,
+     numeroCuotas Integer,
+     tipoFrecuenciaPago TipoFrecuenciaPago,
+     pagoCada Integer,
+     fechaHoraIngreso Instant,
+     ingresandoFecha Instant,
+     creadoFecha Instant,
+     aprobadoFecha Instant,
+     rechazadoFecha Instant,
+     desembolsadoFecha Instant,
+     cerradoFecha Instant,
+     fechaUltimoPago LocalDate,
+     fechaEsperadaDesembolso Instant,
+     fechaMaximaDesembolso Instant,
+     tipoOperacion TipoOperacion,
+     tipoCancelacion TipoCancelacion
+}
+
+entity PayjoyDevice {
+    deviceTag String required,
+    fechaExpiracion Instant,
+    activo Boolean
+}
+
+relationship OneToOne {
+	PayjoyDevice{credito} to Credito
+}
+
+entity ReembolsoCredito {
+     numeroCuota Integer,
+     fechaInicio LocalDate,
+     fechaFin LocalDate,
+     saldoCapital BigDecimal,
+     valorCapital BigDecimal,
+     valorInteres BigDecimal,
+     valorCuota BigDecimal
+}
+
+enum TipoCharge {
+    COMISION, GASTOS, ITBMS
+}
+
+entity CargoCuota{
+	numeroCuota Integer,
+    fechaPago LocalDate,
+    tipoCargo TipoCharge,
+    monto BigDecimal,
+    montoPagado BigDecimal
+}
+
+relationship OneToMany {
+	Credito{cargoCuota} to CargoCuota{credito}
+}
+
+relationship OneToMany {
+	Credito{reembolso} to ReembolsoCredito{credito}
+}
+
+relationship OneToMany {
+	LineaProducto{credito} to Credito
+}
+
+relationship OneToMany {
+	Cliente{credito} to Credito{cliente}
+}
+
+relationship OneToMany {
+	ProductoCredito{credito} to Credito{productoCredito}
+}
+
+relationship OneToMany {
+	SolicitudCredito{credito} to Credito{solicitudCredito}
+}
+
+relationship OneToMany {
+	ResultadoCalificacion{credito} to Credito{resultadoCalificacion}
+}
+
+relationship OneToMany {
+	ResultadoProducto{credito} to Credito{resultadoProducto}
+}
+
+relationship OneToMany {
+	CondicionCredito{credito} to Credito{condicionCredito}
+}
+
+enum RepaymentResultStatus {
+    PAGADO, NO_PAGADO, DESCONOCIDO
+}
+
+enum TransactionEjecStatus {
+    SATISFACTORIA, ERROR_ANTES_TRANS, ERROR_EN_TRANS, ERROR_DESPUES_TRANS
+}
+
+entity CreditoTransaccion {
+    paymentNote String maxlength(255),
+    nombreLocal String maxlength(100),
+    cedulaCliente String maxlength(30),
+    numeroPagoExt String maxlength(50),
+    formaPagoExt String maxlength(1),
+
+    transaccionFecha Instant,
+
+    estadoPago RepaymentResultStatus,
+
+    amount BigDecimal,
+    principalPortion BigDecimal,
+    interestPortion BigDecimal,
+    feeChargesPortion BigDecimal,
+    penaltyChargesPortion BigDecimal,
+    overpaymentPortion BigDecimal,
+    outstandingLoanBalance BigDecimal,
+    totalOutstanding BigDecimal,
+    totalRepayment BigDecimal
+
+}
+
+
+entity LoanTransaction {
+    coreTransactionId Long,
+    paymentTypeId Long,
+    paymentTypeName String maxlength(100),
+
+    submittedOnDate Instant,
+    estadoEjec TransactionEjecStatus,
+
+    amount BigDecimal,
+    principalPortion BigDecimal,
+    interestPortion BigDecimal,
+    feeChargesPortion BigDecimal,
+    penaltyChargesPortion BigDecimal,
+    overpaymentPortion BigDecimal,
+    outstandingLoanBalance BigDecimal,
+    totalOutstanding BigDecimal,
+    totalRepayment BigDecimal
+}
+
+relationship OneToMany {
+	Oficina{creditoTransaccion} to CreditoTransaccion{oficina}
+}
+
+relationship OneToMany {
+	CreditoTransaccion{loanTransaction} to LoanTransaction{creditoTransaccion}
+}
+
+relationship OneToMany {
+	Credito{CreditoTransaccion} to CreditoTransaccion{credito}
+}
+
+
+entity IngresoLista {
+	arriendo BigDecimal,
+    honorarios BigDecimal,
+    sueldoMensual BigDecimal,
+    sueldoConyuge BigDecimal,
+    otros BigDecimal
+}
+
+entity GastoLista {
+	alimentacion BigDecimal,
+    arriendoMensualNeg BigDecimal,
+    arriendoMensualViv BigDecimal,
+    cuotaHipoteca BigDecimal,
+    cuotaVehiculo BigDecimal,
+    educacion BigDecimal,
+    salud BigDecimal,
+    serviciosBasicos BigDecimal,
+    transporte BigDecimal,
+    vestimienta BigDecimal,
+    otros BigDecimal
+}
+
+enum TipoPropiedad {
+	CASA, DEPARTAMENTO, TERRENO, OFICINA
+}
+
+entity BienPropiedad {
+	tipoPropiedad TipoPropiedad,
+    dimension BigDecimal,
+    ciudad String maxlength(50),
+    avaluo BigDecimal,
+    valorHipotecario BigDecimal,
+    hipotecario String maxlength(50)
+}
+
+relationship OneToMany {
+	SolicitudCredito{bienesPropiedad} to BienPropiedad
+}
+
+relationship OneToMany {
+	Cliente{bienesPropiedad} to BienPropiedad{cliente}
+}
+
+entity BienVehiculo {
+	marca String maxlength(50),
+	modelo String maxlength(50),
+	placa String maxlength(14),
+    ano String maxlength(4),
+    valor BigDecimal,
+    prendador String maxlength(50)
+}
+
+relationship OneToMany {
+	SolicitudCredito{bienesVehiculo} to BienVehiculo
+}
+
+relationship OneToMany {
+	Cliente{bienesVehiculo} to BienVehiculo{cliente}
+}
+
+entity DeudaLista {
+	tarjetaCredSaldo BigDecimal,
+    tarjetaCredCuota BigDecimal,
+    prestamoConsSaldo BigDecimal,
+    prestamoConsCuota BigDecimal,
+    prestamoVehSaldo BigDecimal,
+    prestamoVehCuota BigDecimal,
+    prestamoHipSaldo BigDecimal,
+    prestamoHipCuota BigDecimal,
+    otrosSaldo BigDecimal,
+    otrosCuota BigDecimal
+}
+
+entity CreditoRetanqueo {
+    tipoCredito String maxlength(100),
+    formaPago String maxlength(100),
+    cuotaMensual BigDecimal,
+    saldoAPrecancelar BigDecimal
+}
+
+relationship OneToMany {
+	Credito{creditoRetanqueo} to CreditoRetanqueo{credito}
+}
+
+relationship OneToOne {
+	SolicitudCredito{deudaLista} to DeudaLista
+}
+
+relationship OneToMany {
+	Cliente{deudaLista} to DeudaLista{cliente}
+}
+
+relationship OneToOne {
+	SolicitudCredito{ingresoLista} to IngresoLista
+}
+
+relationship OneToMany {
+	Cliente{ingresoLista} to IngresoLista{cliente}
+}
+
+relationship OneToOne {
+	SolicitudCredito{gastoLista} to GastoLista
+}
+
+relationship OneToMany {
+	Cliente{gastoLista} to GastoLista{cliente}
+}
+
+relationship OneToMany {
+	Oficina{solicitudCredito} to SolicitudCredito{oficina}
+}
+
+entity EmpresaImagen {
+    imagenType TipoImagen,
+    file Blob required
+}
+
+relationship OneToMany {
+	Empresa{empresaImagen} to EmpresaImagen{empresa}
+}
+
+enum TipoImagen {
+	LOGO_PRINCIPAL, LOGO_SECUNDARIO
+}
+
+enum TipoListaOfacOnu {
+    OFAC, ONU
+}
+
+entity Comercio {
+    nombre String maxlength(100),
+    nombreComercial String maxlength(100)
+}
+
+entity Tienda {
+    codigo String maxlength(40),
+    nombre String maxlength(100),
+    ciudad String maxlength(50)
+}
+
+relationship OneToMany {
+	Comercio{tienda} to Tienda{comercio}
+}
+
+relationship OneToMany {
+	Tienda{empleado} to Empleado{tienda}
+}
+
+relationship OneToMany {
+	Tienda{solicitudCredito} to SolicitudCredito{tienda}
+}
+
+relationship OneToMany {
+	Tienda{credito} to Credito{tienda}
+}
+
+relationship OneToMany {
+	Tienda{creditoTransaccion} to CreditoTransaccion{tienda}
+}
+
+entity ProductoFinanciero {
+    nombre String maxlength(100),
+    coreLoanProductId Long,
+    coreLoanProductoName String maxlength(100)
+}
+
+relationship ManyToMany {
+    Comercio{lineaProducto} to LineaProducto{comercio}
+}
+
+relationship ManyToMany {
+    Comercio{productoCredito} to ProductoCredito{comercio}
+}
+
+relationship ManyToMany {
+    Comercio{productoFinanciero} to ProductoFinanciero{comercio}
+}
+
+enum EstadosCliente {
+	REGISTRADO, CEDULA_VALIDADA, IDENTIDAD_VERIFICADA, CALIFICADO, DATOS_INGRESADOS
+}
+
+enum EstadosValidacionCedula {
+	APROBADO, RECHAZADO
+}
+
+enum EstadosVerificacionIdentidad {
+	APROBADO, RECHAZADO
+}
+
+enum TipoIdentificacion {
+	CEDULA, PASAPORTE
+}
+
+entity ClienteRegistrado {
+    tipoIdentificacion TipoIdentificacion,
+    paisIdentificacion String maxlength(5),
+    numeroIdentificacion String maxlength(30),
+    nombre String maxlength(50),
+    segundoNombre String maxlength(50),
+    apellido String maxlength(50),
+    segundoApellido String maxlength(50),
+    estadoCliente EstadosCliente,
+    validacionCedulaEstado EstadosValidacionCedula,
+    validacionCedulaScore BigDecimal,
+    validationCedulaError String maxlength(50),
+    verificacionIdentidadEstado EstadosVerificacionIdentidad,
+    verificacionIdentidadScore BigDecimal,
+    verificacionIdentidadError String maxlength(50),
+    calificacionEstadoDd EstadosResultadoCalificacion,
+    calificacionCapacidadPagoDd BigDecimal,
+    calificacionEstadoPv EstadosResultadoCalificacion,
+    calificacionCapacidadPagoPv BigDecimal,
+    comercioSolicitud String maxlength(100),
+    fechaRegistroApp LocalDate,
+    ingresoDatosAppTerminado Boolean
+}
+
+relationship OneToMany {
+	CategoriaCliente{clienteRegistrado} to ClienteRegistrado{categoriaCliente}
+}
+
+entity DocumentoOfacOnu {
+    file Blob,
+    fechaSubido Instant,
+    tipoLista TipoListaOfacOnu,
+    userId Long,
+}
+
+relationship OneToMany {
+	Tienda{creditoTransaccion} to CreditoTransaccion{tienda}
+}
+
+enum TipoInformacion {
+	NOMBRES, HASH, FECHA, TIEMPO
+}
+
+entity DocumentoOfacOnu {
+    tipo TipoDocumento required,
+    numeroPagina Integer,
+    tipoInformacion TipoInformacion,
+    posX Integer,
+    posY Integer,
+    fontSize BigDecimal,
+    font String,
+    valorRotateDegrees Integer
+}
+
+paginate ReembolsoCredito, CreditoTransaccion, DeudaLista, BienPropiedad, BienVehiculo, ReferenciaComercial, Conyuge, Empresa, ClienteDatosPersonales, BlackListCredito,
+Oficina, Empleado, Cliente, SolicitudCredito, Credito, Referencia, Direccion, DatosDomicilio, DatosLaboral, ClienteSupermercado, DatosConsulta with pagination
+paginate Telefono, Documento, Novedad, IngresoLista, GastoLista, LineaCredito, ResultadoCalificacion, ProductoCredito, ResultadoProducto, LineaProducto, CondicionCredito, VerificacionObligatoria, DocumentosObligatorios with pagination
+paginate PayjoyDevice, LineaCreditoSimulador with pagination
+paginate EmpresaImagen, Comercio, Tienda, ProductoFinanciero, ListaEmpresa, ClienteRegistrado, DocumentoOfacOnu with pagination
+paginate CategoriaCliente with infinite-scroll
+dto * with mapstruct
+
+// Set service options to all except few
+service ReembolsoCredito, CreditoTransaccion, LoanTransaction, DeudaLista, BienPropiedad, BienVehiculo, ReferenciaComercial, Conyuge, Empresa, Oficina, Empleado, Documento, Cliente,
+ClienteDatosPersonales, CategoriaCliente, SolicitudCredito, Credito, Referencia, Direccion, DatosDomicilio, DatosLaboral, DatosConsulta, BlackListCredito,
+Novedad, IngresoLista, GastoLista, ClienteSupermercado, ResultadoCalificacion, ProductoCredito, ResultadoProducto, Telefono, LineaCredito, LineaProducto, CondicionCredito, VerificacionObligatoria, DocumentosObligatorios with serviceImpl
+service PayjoyDevice, CargoCuota, LineaCreditoSimulador with serviceImpl
+service EmpresaImagen, Comercio, Tienda, ProductoFinanciero, ListaEmpresa, ClienteRegistrado, DocumentoOfacOnu with serviceImpl
