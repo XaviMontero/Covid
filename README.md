@@ -9,7 +9,7 @@ Este proyecto consume una API levantada en Heroku.
 
 `Data` Verifiquemos la dirección de las víctimas de covid-19. Vea más de mi análisis de las redes sociales y los asuntos públicos a continuación.
 
-`Acceda`  analice y manténgase informado. Datos globales confiables de Coronavirus (COVID-19) de nuestros expertos de la comunidad
+`Acceda`  analice y manténgase informado. Datos globales confiables de Coronavirus (COVID-19) de nuestros expertos de la comunidad.
 
 
 ![Vertical](https://raw.githubusercontent.com/XaviMontero/coivd/master/img/ecu.png)
